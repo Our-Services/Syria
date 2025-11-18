@@ -26,9 +26,22 @@ body {
 .dark-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0, 0, 0, 0.551);
   z-index: 1;
   pointer-events: none;
+}
+
+/* تعتيم خفيف للحواف (Vignette) فوق الخلفية */
+.dark-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* مركز شفاف وحواف أغمق بشكل بسيط */
+  background: radial-gradient(ellipse at center,
+    rgba(0, 0, 0, 0) 55%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
 }
 
 /* رأس الموقع */
