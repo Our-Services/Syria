@@ -7,30 +7,52 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <!-- خلفية فيديو داكنة -->
-    <video id="bg-video" class="background-video" loop playsinline preload="none">
-      <source id="bg-src" src="bg.mp4" type="video/mp4" />
-      متصفحك لا يدعم تشغيل الفيديو.
-    </video>
-
-    <!-- طبقة تعتيم خفيفة فوق الفيديو -->
-    <div class="dark-overlay"></div>
-
-    <!-- رأس الموقع ومحتوى تعريفي بسيط -->
-    <header class="site-header">
-      <div class="header-content">
-        <h1 class="site-title">يوم التحرير</h1>
-        <p class="tagline">سورية حرة – قوة وأمل ووطن لا ينكسر</p>
-      </div>
+    <!-- رأس الصفحة شبه شفاف -->
+    <header class="site-header" role="navigation" aria-label="رأس الصفحة">
+      <!-- شارة هاشتاغ مثبتة في الزاوية اليمنى -->
+      <div class="hashtag-badge" aria-label="هاشتاغ سورية حرة"># سورية حرة</div>
+      <nav class="nav">
+        <div class="nav-bar">
+          <ul class="nav-list">
+            <li><a href="#about-liberation" class="nav-link">عن يوم التحرير</a></li>
+            <li><a href="#what-happened" class="nav-link">ماذا حدث</a></li>
+            <li><a href="#new-syria" class="nav-link">ما هي سوريا الجديدة</a></li>
+          </ul>
+        </div>
+      </nav>
     </header>
 
-    <!-- شاشة البداية ذات الخلفية السوداء والمؤقت -->
+    <!-- خلفية فيديو داكنة (سيُفعّل مصدره عند حلول الموعد) -->
+    <video id="bg-video" class="background-video" loop playsinline muted></video>
+
+    <!-- طبقة تعتيم خفيفة مع تعتيم حواف (Vignette) فوق الفيديو -->
+    <div class="dark-overlay"></div>
+
+
+    <!-- شاشة البداية السوداء مع "ابدأ" والوقت -->
     <div id="splash" class="splash">
-      <div id="countdown" class="countdown" aria-live="polite" aria-label="العد التنازلي"></div>
+      <div id="starter" class="starter" role="button" aria-label="ابدأ">ابدأ</div>
+      <div id="countdown" class="countdown hidden" aria-live="polite" aria-label="الوقت الحالي"></div>
     </div>
 
-    <!-- تمت إزالة التلميح لضمان تجربة تلقائية دون تفاعل -->
+    <!-- محتوى الصفحة: الأقسام الثلاثة -->
+    <main class="content" role="main">
+      <section id="about-liberation" class="page-section" aria-labelledby="about-title">
+        <h2 id="about-title" class="section-title">عن يوم التحرير</h2>
+        <p class="section-body">لونة</p>
+      </section>
+
+      <section id="what-happened" class="page-section" aria-labelledby="happened-title">
+        <h2 id="happened-title" class="section-title">ماذا حدث</h2>
+        <p class="section-body">لونة</p>
+      </section>
+
+      <section id="new-syria" class="page-section" aria-labelledby="new-syria-title">
+        <h2 id="new-syria-title" class="section-title">ما هي سوريا الجديدة</h2>
+        <p class="section-body">لونة</p>
+      </section>
+    </main>
 
     <script src="script.js"></script>
   </body>
-  </html>
+</html>
