@@ -143,6 +143,25 @@ html { scroll-behavior: smooth; }
   line-height: 1.65;
   color: #eaeaea;
 }
+/* تحسينات للجوال لتفادي تراكب عناصر الرأس */
+@media (max-width: 640px) {
+  .site-header { padding-top: 40px; } /* مساحة فوق الشريط من أجل الشارة */
+  .hashtag-badge {
+    top: 6px; right: 10px;
+    padding: 5px 8px;
+    font-size: clamp(0.75rem, 3.6vw, 0.9rem);
+  }
+  .nav-bar {
+    padding: 16px 12px; /* تقليل السماكة قليلاً على الجوال */
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+  }
+  .nav-list {
+    flex-wrap: wrap; /* يسمح بالنزول إلى سطر ثانٍ بدون تراكب */
+    gap: 18px; /* تقليل التباعد ليتناسب مع العرض الضيق */
+    padding: 10px 8px;
+  }
+}
 
 /* شاشة البداية السوداء */
 .splash {
