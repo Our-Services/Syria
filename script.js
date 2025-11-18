@@ -2,7 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const countdownEl = document.getElementById('countdown');
   const splash = document.getElementById('splash');
   const bgVideo = document.getElementById('bg-video');
-  const audioHint = document.getElementById('audio-hint');
+  const bgSrc = document.getElementById('bg-src');
+  // تهيئة تحميل الفيديو مبكرًا لضمان ظهور الإطار الأول
+  let metaReady = false;
+  bgVideo.addEventListener('loadeddata', () => { metaReady = true; });
+  bgVideo.addEventListener('canplay', () => { metaReady = true; });
+  // تشغيل الصوت تلقائياً بعد انتهاء الوقت بدون أي تفاعل
 
   // تأكد أن الفيديو متوقف ولا يبدأ قبل الوقت
   try { bgVideo.pause(); } catch (_) {}
@@ -42,19 +47,43 @@ document.addEventListener('DOMContentLoaded', () => {
         splash.classList.add('fade-out');
         bgVideo.classList.add('visible');
 
-        // محاولة تشغيل الصوت تلقائيًا (قد تُرفض بحسب سياسة المتصفح)
-        try {
-          bgVideo.muted = false;
-          bgVideo.volume = 0.8;
-          const p = bgVideo.play();
-          if (p) await p;
-        } catch (err) {
-          // إذا فشل التشغيل بالصوت، إظهار تلميح بسيط لطلب نقرة في أي مكان
-          if (audioHint) {
-            audioHint.classList.remove('hidden');
-            audioHint.classList.add('show');
+        const loadAndPlay = async () => {
+          try {
+            const head = await fetch('bg.mp4', { method: 'HEAD', cache: 'no-store' });
+            if (!head.ok) throw new Error('HEAD failed');
+            const resp = await fetch('bg.mp4', { cache: 'no-store' });
+            if (!resp.ok) throw new Error('GET failed');
+            const blob = await resp.blob();
+            const url = URL.createObjectURL(blob);
+            bgVideo.src = url;
+          } catch (_) {
+            // مسار احتياطي: اربط مباشرة
+            bgVideo.src = 'bg.mp4';
           }
-        }
+
+          bgVideo.setAttribute('playsinline', '');
+          bgVideo.muted = true;
+          bgVideo.volume = 0.8;
+          try { bgVideo.load(); } catch (_) {}
+
+          try {
+            const p = bgVideo.play();
+            if (p) await p;
+            setTimeout(() => { bgVideo.muted = false; }, 800);
+          } catch (_) {
+            // إذا فشل التشغيل، حاول إظهار الإطار الأول
+            try { if (metaReady) bgVideo.currentTime = 0.02; } catch (_) {}
+          }
+        };
+
+        await loadAndPlay();
+
+        // محاولة إضافية بعد قليل إذا حدث إلغاء
+        setTimeout(() => {
+          if (bgVideo.paused) {
+            bgVideo.play().catch(() => {});
+          }
+        }, 2000);
       }, 2500);
 
       // يمكن إنهاء المؤقت بعد بدء التلاشي
@@ -65,26 +94,5 @@ document.addEventListener('DOMContentLoaded', () => {
   // بدء العدّ: 5 ثوانٍ حتى منتصف الليل
   const timer = setInterval(tick, 1000);
 
-  // بديل: أي نقرة في الصفحة تفعل الصوت إن كان محظورًا
-  const enableAudio = async () => {
-    try {
-      bgVideo.muted = false;
-      bgVideo.volume = 0.8;
-      const p = bgVideo.play();
-      if (p) await p;
-      if (audioHint) {
-        audioHint.classList.remove('show');
-        audioHint.classList.add('hidden');
-      }
-      // إزالة المستمعات بعد التفعيل
-      document.removeEventListener('click', enableAudio);
-      document.removeEventListener('keydown', enableAudio);
-      document.removeEventListener('touchstart', enableAudio);
-    } catch (_) {
-      // إذا استمر الرفض، نبقي التلميح
-    }
-  };
-  document.addEventListener('click', enableAudio);
-  document.addEventListener('keydown', enableAudio);
-  document.addEventListener('touchstart', enableAudio);
+  // لا مستمعات ولا نقرات — تجربة تلقائية بالكامل حسب الإمكان
 });
