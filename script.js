@@ -9,6 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
   bgVideo.addEventListener('canplay', () => { metaReady = true; });
   // تجهيز مبكر لتدفئة التحميل وتقليل التعليق
   let prepared = false;
+  // عدادات التعثر ومصدر Blob الاحتياطي
+  let stallCount = 0;
+  let blobLoading = false;
+  let blobUrl = null;
   // تشغيل الصوت تلقائياً بعد انتهاء الوقت بدون أي تفاعل
 
   // تأكد أن الفيديو متوقف ولا يبدأ قبل الوقت
@@ -81,10 +85,49 @@ document.addEventListener('DOMContentLoaded', () => {
           try { if (metaReady) bgVideo.currentTime = 0.02; } catch (_) {}
         }
 
-        // التعافي من الانتظار/التعثّر بمحاولة متابعة التشغيل
-        const tryResume = () => bgVideo.play().catch(() => {});
-        bgVideo.addEventListener('waiting', tryResume);
-        bgVideo.addEventListener('stalled', tryResume);
+        // التعافي الذكي من التعثر/الانتظار مع تبديل إلى Blob عند تكرار التوقف
+        const handleStall = async (evt) => {
+          stallCount++;
+          const tryResume = () => bgVideo.play().catch(() => {});
+          tryResume();
+
+          // محاولة خفيفة لتجاوز فجوة التخزين المؤقت
+          setTimeout(() => {
+            if (bgVideo.paused || bgVideo.readyState < 3) {
+              try { bgVideo.currentTime = Math.max(0, bgVideo.currentTime + 0.05); } catch (_) {}
+              tryResume();
+            }
+          }, 500);
+
+          // إذا تكرر التعثر عدة مرات، بدّل إلى مصدر Blob بعد تنزيله بالكامل
+          if (stallCount >= 3 && !blobLoading) {
+            blobLoading = true;
+            try {
+              const resp = await fetch('bg.mp4', { cache: 'no-store' });
+              if (!resp.ok) throw new Error('Blob fetch failed');
+              const blob = await resp.blob();
+              const t = bgVideo.currentTime;
+              // حرر URL قديم إن وجد
+              if (blobUrl) { try { URL.revokeObjectURL(blobUrl); } catch (_) {} }
+              blobUrl = URL.createObjectURL(blob);
+              bgVideo.src = blobUrl;
+              try { bgVideo.load(); } catch (_) {}
+              try { bgVideo.currentTime = t; } catch (_) {}
+              tryResume();
+              setTimeout(() => { bgVideo.muted = false; }, 800);
+            } catch (_) {
+              // فشل جلب Blob؛ استمر بمحاولات الاستئناف العادية
+              tryResume();
+            } finally {
+              blobLoading = false;
+            }
+          }
+        };
+
+        bgVideo.addEventListener('waiting', handleStall);
+        bgVideo.addEventListener('stalled', handleStall);
+        bgVideo.addEventListener('suspend', handleStall);
+        bgVideo.addEventListener('error', handleStall);
       }, 2500);
 
       // يمكن إنهاء المؤقت بعد بدء التلاشي
