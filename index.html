@@ -8,8 +8,8 @@
   </head>
   <body>
     <!-- خلفية فيديو داكنة -->
-    <video id="bg-video" class="background-video" loop playsinline preload="auto">
-      <source src="Assala - Syria Janna _ Official Music Video 2024 _ أصالة - سورية جنة(360P).mp4" type="video/mp4" />
+    <video id="bg-video" class="background-video" loop playsinline>
+      <source id="bg-src" type="video/mp4" />
       متصفحك لا يدعم تشغيل الفيديو.
     </video>
 
@@ -29,10 +29,7 @@
       <div id="countdown" class="countdown" aria-live="polite" aria-label="العد التنازلي"></div>
     </div>
 
-    <!-- تلميح تفاعلي دون أزرار: يظهر فقط إذا رفض المتصفح الصوت التلقائي -->
-    <div id="audio-hint" class="audio-hint hidden" role="dialog" aria-live="polite">
-      انقر في أي مكان لتفعيل الصوت
-    </div>
+    <!-- تمت إزالة التلميح لضمان تجربة تلقائية دون تفاعل -->
 
     <script src="script.js"></script>
   </body>
