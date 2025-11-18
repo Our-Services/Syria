@@ -56,7 +56,7 @@ html { scroll-behavior: smooth; }
   border-top-right-radius: 0;
   border-bottom-left-radius: 28px; /* انحناء أكبر قليلاً */
   border-bottom-right-radius: 28px; /* انحناء أكبر قليلاً */
-  padding: 28px 32px; /* زيادة السماكة للأسفل */
+  padding: 28px 32px; /* القيم العامة لسطح المكتب */
 }
 .nav-list {
   display: flex;
@@ -65,7 +65,7 @@ html { scroll-behavior: smooth; }
   gap: 65px; /* زيادة التباعد بين الخيارات */
   list-style: none;
   margin: 0;
-  padding: 16px 16px; /* زيادة ارتفاع الشريط ككل */
+  padding: 16px 16px; /* القيم العامة لسطح المكتب */
 }
 .nav-link {
   color: #fff;
@@ -123,10 +123,10 @@ html { scroll-behavior: smooth; }
   z-index: 2; /* فوق طبقة التعتيم */
   max-width: 1100px;
   margin: 0 auto;
-  padding: 180px 16px 48px; /* زيادة بسيطة لإبعاد الأقسام عن الرأس */
+  padding: 188px 16px 48px; /* تعويض ارتفاع الرأس بعد التوسيع */
 }
 .page-section {
-  scroll-margin-top: 180px; /* ضبط التعويض ليتوافق مع المسافة الجديدة */
+  scroll-margin-top: 188px; /* ضبط التعويض ليتوافق مع المسافة الجديدة */
   margin-bottom: 64px;
   background: rgba(0,0,0,0.35);
   border: 1px solid rgba(255,255,255,0.12);
@@ -143,26 +143,29 @@ html { scroll-behavior: smooth; }
   line-height: 1.65;
   color: #eaeaea;
 }
+/*_______________________________________________________________*/
 /* تحسينات للجوال لتفادي تراكب عناصر الرأس */
 @media (max-width: 640px) {
-  .site-header { padding-top: 40px; } /* مساحة فوق الشريط من أجل الشارة */
+  .site-header { top: 6px; } /* إزاحة طفيفة للأسفل بدون مساحة داخلية فوق الشريط */
   .hashtag-badge {
     top: 6px; right: 10px;
     padding: 5px 8px;
     font-size: clamp(0.75rem, 3.6vw, 0.9rem);
   }
   .nav-bar {
-    padding: 16px 12px; /* تقليل السماكة قليلاً على الجوال */
+    padding: 24px 18px; /* توسيع الشريط للجوال وإنزال الروابط قليلاً */
     border-bottom-left-radius: 24px;
     border-bottom-right-radius: 24px;
   }
   .nav-list {
     flex-wrap: wrap; /* يسمح بالنزول إلى سطر ثانٍ بدون تراكب */
-    gap: 18px; /* تقليل التباعد ليتناسب مع العرض الضيق */
-    padding: 10px 8px;
+    gap: 18px; /* تباعد مناسب للشاشات الصغيرة */
+    padding: 14px 12px; /* إنزال الروابط قليلاً داخل الشريط للجوال */
   }
+  .content { padding-top: 168px; } /* تعويض ارتفاع الرأس للجوال فقط */
+  .page-section { scroll-margin-top: 168px; }
 }
-
+/*_______________________________________________________________*/
 /* شاشة البداية السوداء */
 .splash {
   position: fixed;
