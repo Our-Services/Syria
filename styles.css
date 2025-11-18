@@ -5,9 +5,81 @@ body {
   margin: 0;
   background: #000;
   color: #fff;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Naskh Arabic", "Tahoma", Arial, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Naskh Arabic", Tahoma, Arial, sans-serif;
 }
 
+/* تمرير سلس */
+html { scroll-behavior: smooth; }
+
+/* رأس الصفحة */
+.site-header {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  z-index: 5; /* فوق السلاش والطبقات */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1.8s ease;
+}
+.site-header.show { opacity: 1; visibility: visible; }
+.hashtag-badge {
+  /*_______________________________________________________________*/
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  padding: 6px 10px;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: clamp(0.85rem, 2.4vw, 1rem);
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+  animation: hashtagColors 6s ease-in-out infinite;
+  z-index: 6; /* فوق عناصر شريط الرأس */
+}
+@keyframes hashtagColors {
+  0%   { background-color: #0b5d1e; color: #ffffff; }
+  33%  { background-color: #ffffff; color: #111111; }
+  66%  { background-color: #c41515; color: #ffffff; }
+  100% { background-color: #0b5d1e; color: #ffffff; }
+}
+/*_______________________________________________________________*/
+.nav { width: 100%; margin: 0; }
+.nav-bar {
+  width: 100%; /* يمتد على كامل العرض بدون تجاوز */
+  margin: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.12);
+  /* بدون حواف دائرية كاملة؛ فقط انحناء بسيط في الأسفل */
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 28px; /* انحناء أكبر قليلاً */
+  border-bottom-right-radius: 28px; /* انحناء أكبر قليلاً */
+  padding: 28px 32px; /* زيادة السماكة للأسفل */
+}
+.nav-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 65px; /* زيادة التباعد بين الخيارات */
+  list-style: none;
+  margin: 0;
+  padding: 16px 16px; /* زيادة ارتفاع الشريط ككل */
+}
+.nav-link {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: clamp(0.95rem, 2.9vw, 1.25rem);
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.nav-link:hover {
+  background: rgba(255,255,255,0.12);
+}
+/*_______________________________________________________________*/
 /* فيديو الخلفية */
 .background-video {
   position: fixed;
@@ -15,54 +87,61 @@ body {
   width: 100vw;
   height: 100vh;
   object-fit: cover;
-  opacity: 0; /* سيظهر تدريجيًا */
-  filter: brightness(0.6);
-  transition: opacity 2.5s ease-out;
+  opacity: 0;
+  visibility: hidden; /* يمنع الظهور قبل الموعد */
+  filter: brightness(0.45); /* تعتيم بسيط إضافي للفيديو */
+  transition: opacity 2.8s ease-out;
   z-index: 0;
 }
-.background-video.visible { opacity: 1; }
+.background-video.visible { opacity: 1; visibility: visible; }
 
-/* طبقة تعتيم خفيفة فوق الفيديو */
+/* طبقة تعتيم مع تعتيم الحواف */
 .dark-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.551);
+  background: rgba(0, 0, 0, 0.74);
   z-index: 1;
   pointer-events: none;
 }
-
-/* تعتيم خفيف للحواف (Vignette) فوق الخلفية */
 .dark-overlay::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  /* مركز شفاف وحواف أغمق بشكل بسيط */
   background: radial-gradient(ellipse at center,
     rgba(0, 0, 0, 0) 55%,
     rgba(0, 0, 0, 0.35) 100%
   );
 }
+/*_______________________________________________________________*/
+/* لافتة يوم التحرير فوق الفيديو */
+/* أزيلنا لافتة الخلفية بناءً على طلبك */
 
-/* رأس الموقع */
-.site-header {
+/* أقسام المحتوى */
+.content {
   position: relative;
-  z-index: 2;
-  text-align: center;
-  padding: 6vh 2rem 4vh;
+  z-index: 2; /* فوق طبقة التعتيم */
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 180px 16px 48px; /* زيادة بسيطة لإبعاد الأقسام عن الرأس */
 }
-.site-title {
-  margin: 0 0 1rem 0;
-  font-weight: 800;
-  color: #fff;
-  font-size: clamp(2.8rem, 8vw, 6rem);
-  letter-spacing: 0.02em;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+.page-section {
+  scroll-margin-top: 180px; /* ضبط التعويض ليتوافق مع المسافة الجديدة */
+  margin-bottom: 64px;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 24px;
 }
-.tagline {
+.section-title {
+  margin: 0 0 12px 0;
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+}
+.section-body {
   margin: 0;
-  font-size: clamp(1rem, 2.8vw, 1.5rem);
-  color: #e0e0e0;
+  font-size: clamp(1rem, 2.8vw, 1.15rem);
+  line-height: 1.65;
+  color: #eaeaea;
 }
 
 /* شاشة البداية السوداء */
@@ -73,27 +152,43 @@ body {
   z-index: 3;
   display: grid;
   place-items: center;
-  transition: opacity 2.5s ease-in-out;
+  transition: opacity 2.0s ease-in-out;
 }
-.splash.fade-out {
-  opacity: 0;
-  pointer-events: none;
-}
+.splash.fade-out { opacity: 0; pointer-events: none; }
 
-/* المؤقت في المنتصف بحجم كبير */
+/* نص البداية "ابدأ" مع توهج لطيف */
+.starter {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 4;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: clamp(2.2rem, 7.5vw, 6rem);
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 20px rgba(255,255,255,0.35), 0 0 8px rgba(255,255,255,0.25);
+  cursor: pointer;
+  transition: opacity 1.6s ease, transform 0.35s ease;
+}
+.starter:hover { transform: scale(1.02); }
+.starter.fade-out { opacity: 0; pointer-events: none; }
+
+/* الوقت */
 .countdown {
   font-weight: 900;
-  font-size: clamp(2.5rem, 9vw, 9rem);
+  font-size: clamp(2.2rem, 7.5vw, 7.5rem); /* تصغير بسيط لحجم الوقت */
   line-height: 1.1;
   color: #ffffff;
   letter-spacing: 0.04em;
   text-align: center;
+  transition: opacity 1.8s ease; /* ظهور أبطأ */
 }
+.countdown.hidden { opacity: 0; }
+.countdown.show { opacity: 1; }
 
 /* رعشة كل ثانية */
-.shake {
-  animation: shake 180ms ease-in-out;
-}
+.shake { animation: shake 180ms ease-in-out; }
 @keyframes shake {
   0%   { transform: translate3d(0, 0, 0); }
   25%  { transform: translate3d(-1.5px, 0, 0); }
@@ -102,7 +197,7 @@ body {
   100% { transform: translate3d(0, 0, 0); }
 }
 
-/* نبض أحمر عند الوصول إلى 2024/12/08 00:00:00 */
+/* نبض أحمر عند الوصول للموعد */
 .pulse-red {
   color: #ff2b2b;
   text-shadow: 0 0 16px rgba(255, 43, 43, 0.55);
@@ -113,44 +208,3 @@ body {
   50%  { transform: scale(1.05); opacity: 0.85; }
   100% { transform: scale(1); opacity: 1; }
 }
-
-/* زر الصوت */
-.sound-btn {
-  position: fixed;
-  right: 2rem;
-  bottom: 2rem;
-  z-index: 4;
-  padding: 0.9rem 1.2rem;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.25);
-  background: rgba(255,255,255,0.08);
-  color: #fff;
-  font-weight: 700;
-  font-size: 1rem;
-  backdrop-filter: blur(6px);
-  cursor: pointer;
-  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease, opacity 0.3s ease;
-}
-.sound-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.35); }
-.sound-btn:active { transform: translateY(0); }
-.sound-btn.hidden { opacity: 0; pointer-events: none; }
-.sound-btn.show { opacity: 1; }
-
-/* تلميح الصوت (لا يحتوي أزرار) */
-.audio-hint {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  z-index: 4;
-  color: #fff;
-  font-weight: 800;
-  font-size: clamp(1.2rem, 3.5vw, 2rem);
-  letter-spacing: 0.02em;
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(4px);
-  text-align: center;
-  transition: opacity 0.4s ease;
-}
-.audio-hint.hidden { opacity: 0; pointer-events: none; }
-.audio-hint.show { opacity: 1; }
