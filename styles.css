@@ -158,10 +158,15 @@ html { scroll-behavior: smooth; }
     border-bottom-right-radius: 24px;
   }
   .nav-list {
-    flex-wrap: wrap; /* يسمح بالنزول إلى سطر ثانٍ بدون تراكب */
-    gap: 18px; /* تباعد مناسب للشاشات الصغيرة */
-    padding: 14px 12px; /* إنزال الروابط قليلاً داخل الشريط للجوال */
+    flex-wrap: nowrap; /* إبقاء الروابط في صف واحد */
+    overflow-x: auto; /* تمرير أفقي عند الحاجة */
+    -webkit-overflow-scrolling: touch;
+    gap: 16px; /* تقليل بسيط للتباعد ليتّسع الصف */
+    padding: 12px 8px; /* إنزال خفيف وإتاحة مساحة للتمرير */
   }
+  .nav-link { white-space: nowrap; font-size: clamp(0.85rem, 3.3vw, 1.05rem); }
+  .nav-list::-webkit-scrollbar { height: 6px; }
+  .nav-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 9999px; }
   .content { padding-top: 168px; } /* تعويض ارتفاع الرأس للجوال فقط */
   .page-section { scroll-margin-top: 168px; }
 }
