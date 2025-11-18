@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let metaReady = false;
   bgVideo.addEventListener('loadeddata', () => { metaReady = true; });
   bgVideo.addEventListener('canplay', () => { metaReady = true; });
+  // تجهيز مبكر لتدفئة التحميل وتقليل التعليق
+  let prepared = false;
   // تشغيل الصوت تلقائياً بعد انتهاء الوقت بدون أي تفاعل
 
   // تأكد أن الفيديو متوقف ولا يبدأ قبل الوقت
@@ -37,6 +39,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // تحديث النص
     countdownEl.textContent = format();
 
+    // جهّز الفيديو قبل الموعد بثوانٍ (بدون إظهاره)
+    if (!prepared && y === 2024 && m === 12 && d === 7 && hh === 23 && mm === 59 && ss >= 58) {
+      try {
+        bgVideo.setAttribute('playsinline', '');
+        bgVideo.muted = true;
+        bgVideo.volume = 0.8;
+        bgVideo.preload = 'auto';
+        bgVideo.src = 'bg.mp4';
+        bgVideo.load();
+        prepared = true;
+      } catch (_) {}
+    }
+
     // الوصول إلى اليوم التالي 2024/12/08 00:00:00
     if (y === 2024 && m === 12 && d === 8 && hh === 0 && mm === 0 && ss === 0) {
       countdownEl.textContent = '2024/12/08 00:00:00';
@@ -47,43 +62,29 @@ document.addEventListener('DOMContentLoaded', () => {
         splash.classList.add('fade-out');
         bgVideo.classList.add('visible');
 
-        const loadAndPlay = async () => {
-          try {
-            const head = await fetch('bg.mp4', { method: 'HEAD', cache: 'no-store' });
-            if (!head.ok) throw new Error('HEAD failed');
-            const resp = await fetch('bg.mp4', { cache: 'no-store' });
-            if (!resp.ok) throw new Error('GET failed');
-            const blob = await resp.blob();
-            const url = URL.createObjectURL(blob);
-            bgVideo.src = url;
-          } catch (_) {
-            // مسار احتياطي: اربط مباشرة
-            bgVideo.src = 'bg.mp4';
-          }
-
-          bgVideo.setAttribute('playsinline', '');
-          bgVideo.muted = true;
-          bgVideo.volume = 0.8;
+        // تأكيد الإعدادات الأساسية ثم التشغيل المباشر
+        bgVideo.setAttribute('playsinline', '');
+        bgVideo.muted = true;
+        bgVideo.volume = 0.8;
+        if (!bgVideo.src) {
+          bgVideo.preload = 'auto';
+          bgVideo.src = 'bg.mp4';
           try { bgVideo.load(); } catch (_) {}
+        }
 
-          try {
-            const p = bgVideo.play();
-            if (p) await p;
-            setTimeout(() => { bgVideo.muted = false; }, 800);
-          } catch (_) {
-            // إذا فشل التشغيل، حاول إظهار الإطار الأول
-            try { if (metaReady) bgVideo.currentTime = 0.02; } catch (_) {}
-          }
-        };
+        try {
+          const p = bgVideo.play();
+          if (p) await p;
+          setTimeout(() => { bgVideo.muted = false; }, 800);
+        } catch (_) {
+          // إذا فشل التشغيل، حاول إظهار الإطار الأول
+          try { if (metaReady) bgVideo.currentTime = 0.02; } catch (_) {}
+        }
 
-        await loadAndPlay();
-
-        // محاولة إضافية بعد قليل إذا حدث إلغاء
-        setTimeout(() => {
-          if (bgVideo.paused) {
-            bgVideo.play().catch(() => {});
-          }
-        }, 2000);
+        // التعافي من الانتظار/التعثّر بمحاولة متابعة التشغيل
+        const tryResume = () => bgVideo.play().catch(() => {});
+        bgVideo.addEventListener('waiting', tryResume);
+        bgVideo.addEventListener('stalled', tryResume);
       }, 2500);
 
       // يمكن إنهاء المؤقت بعد بدء التلاشي
